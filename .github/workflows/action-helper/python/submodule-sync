@@ -51,7 +51,7 @@ def main():
 
         pr.comment(number, content=f"HEAD commit SHA: {args.sha}, "
                                    f"CUDF commit SHA: https://github.com/rapidsai/cudf/commit/{args.cudf_sha}\n"
-                                   f"Test passed: {args.passed}")
+                                   f"Test passed: **{args.passed}**")
 
         if args.passed and args.sha == sha:
             pr.auto_merge(number, sha)
