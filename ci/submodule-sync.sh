@@ -15,6 +15,11 @@
 # limitations under the License.
 #
 
+# NOTE:
+#     this script is for jenkins only, and should not be used for local development
+#     run with ci/Dockerfile in jenkins:
+#         scl enable devtoolset-9 rh-python38 "ci/submodule-sync.sh"
+
 set -ex
 
 OWNER=${OWNER:-"pxLi"}
@@ -22,13 +27,16 @@ REPO=${REPO:-"spark-rapids-jni"}
 PARALLEL_LEVEL=${PARALLEL_LEVEL:-4}
 REPO_LOC="github.com/${OWNER}/${REPO}.git"
 
+git config user.name "spark-rapids automation"
+git config user.email "sw-gpu-spark-github-nvauto@nvidia.com"
 git submodule update --init --recursive
 
 INTERMEDIATE_HEAD=bot-submodule-sync-${REF}
-cudf_prev_sha=$(git -C thridparth/cudf rev-parse HEAD)
+cudf_prev_sha=$(git -C thirdparty/cudf rev-parse HEAD)
 git checkout -b ${INTERMEDIATE_HEAD} origin/${REF}
+# sync up cudf from remote
 git submodule update --remote --merge
-cudf_sha=$(git -C thridparth/cudf rev-parse HEAD)
+cudf_sha=$(git -C thirdparty/cudf rev-parse HEAD)
 if [[ "${cudf_sha}" == "${cudf_prev_sha}" ]]; then
   echo "Submodule is up to date."
   exit 0
@@ -39,6 +47,8 @@ git add .
 git commit -s -m "Update submodule cudf to ${cudf_sha}"
 sha=$(git rev-parse HEAD)
 
+echo "Test against ${cudf_sha}..."
+
 set +e
 mvn verify \
   -DCPP_PARALLEL_LEVEL=${PARALLEL_LEVEL} \
@@ -48,11 +58,18 @@ ret="$?"
 set -e
 
 test_pass="False"
-[[ "${ret}" == "0" ]] && test_pass="True"
+if [[ "${ret}" == "0" ]]; then
+  echo "Test failed, will update the result"
+  test_pass="True"
+else
+  echo "Test passed, will try merge the change"
+fi
 
-git push https://${GIT_USER}:${GIT_PWD}@${REPO_LOC} ${INTERMEDIATE_HEAD}
-
-.github/workflows/action-helper/python/submodule-sync.py \
+# force push the intermediate branch and create PR against REF
+# if test passed, it will try auto-merge the PR
+# if test failed, it will only comment the test result in the PR
+git push https://${GIT_USER}:${GIT_PWD}@${REPO_LOC} ${INTERMEDIATE_HEAD} -f
+$WORKSPACE/.github/workflows/action-helper/python/submodule-sync \
   --owner=${OWNER} \
   --repo=${REPO} \
   --head=${INTERMEDIATE_HEAD} \
@@ -60,4 +77,4 @@ git push https://${GIT_USER}:${GIT_PWD}@${REPO_LOC} ${INTERMEDIATE_HEAD}
   --sha=${sha} \
   --cudf_sha=${cudf_sha} \
   --token=${GIT_PWD} \
-  --passed ${test_pass}
+  --passed=${test_pass}

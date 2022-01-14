@@ -18,7 +18,7 @@ set -ex
 SIGN_FILE=$1
 OUT_PATH=$WORKSPACE/target
 
-cd $WORKSPACE/java
+cd $WORKSPACE/
 REL_VERSION=$(mvn exec:exec -q --non-recursive -Dexec.executable=echo -Dexec.args='${project.version}')
 
 echo "REL_VERSION: $REL_VERSION, OUT_PATH: $OUT_PATH \

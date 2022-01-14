@@ -12,23 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# A workflow to check if PR got sign-off
-name: signoff check
+FROM python:alpine
 
-on:
-  pull_request_target:
-    types: [opened, synchronize, reopened]
+WORKDIR /
+COPY python /python
+COPY entrypoint.sh .
+RUN chmod -R +x /python /entrypoint.sh
+RUN pip install requests
 
-jobs:
-  signoff-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: sigoff-check job
-        uses: ./.github/workflows/signoff-check
-        env:
-          OWNER: pxLi
-          REPO_NAME: spark-rapids-jni
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PULL_NUMBER: ${{ github.event.number }}
+ENTRYPOINT ["/entrypoint.sh"]

@@ -1,4 +1,6 @@
-# Copyright (c) 2022, NVIDIA CORPORATION.
+#!/bin/sh -l
+#
+# Copyright (c) 2022, NVIDIA CORPORATION. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,24 +13,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-# A workflow to check if PR got sign-off
-name: signoff check
+set -e
 
-on:
-  pull_request_target:
-    types: [opened, synchronize, reopened]
+if [[ $# -ne 1 ]]; then
+    echo "ERROR: invalid number of parameters, should be exact one"
+    exit 1
+fi
 
-jobs:
-  signoff-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+case $1 in
 
-      - name: sigoff-check job
-        uses: ./.github/workflows/signoff-check
-        env:
-          OWNER: pxLi
-          REPO_NAME: spark-rapids-jni
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PULL_NUMBER: ${{ github.event.number }}
+    auto-merge)
+        /python/auto-merge
+        ;;
+
+    *)
+        echo "ERROR: unknown parameter: $1"
+        ;;
+esac
