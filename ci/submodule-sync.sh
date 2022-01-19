@@ -38,7 +38,7 @@ cudf_prev_sha=$(git -C thirdparty/cudf rev-parse HEAD)
 INTERMEDIATE_HEAD=bot-submodule-sync-${REF}
 # try cleanup remote first if no open PR against BASE
 $WORKSPACE/.github/workflows/action-helper/python/cleanup-bot-branch \
-  --owner=${OWNER} --repo=${REPO} --head=${INTERMEDIATE_HEAD} --base=${REF} --token=${GIT_PWD} || true
+  --owner=${OWNER} --repo=${REPO} --head=${INTERMEDIATE_HEAD} --base=${REF} --token=${GIT_PASSWORD} || true
 
 remote_head=$(git ls-remote --heads origin ${INTERMEDIATE_HEAD})
 if [[ -z $remote_head ]]; then
@@ -91,6 +91,6 @@ $WORKSPACE/.github/workflows/action-helper/python/submodule-sync \
   --base=${REF} \
   --sha=${sha} \
   --cudf_sha=${cudf_sha} \
-  --token=${GIT_PWD} \
+  --token=${GIT_PASSWORD} \
   --passed=${test_pass} \
   --delete_head=True
