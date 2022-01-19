@@ -132,7 +132,7 @@ Once this PR is merged, the auto-merge PR should automatically be closed since i
         else:
             print('FAILURE - create comment')
             print(f'status code: {r.status_code}')
-            print(r.json())
+            raise Exception(f"Failed to create comment: {r.json()}")
 
     def delete_branch(self, owner, branch):
         """delete a branch"""
@@ -143,7 +143,7 @@ Once this PR is merged, the auto-merge PR should automatically be closed since i
         else:
             print(f'FAILURE - delete {branch}')
             print(f'status code: {r.status_code}')
-            print(r.json())
+            raise Exception(f"Failed to delete {branch}: {r.json()}")
 
     def delete_head(self):
         """delete the HEAD branch in a pull request"""
