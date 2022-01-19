@@ -27,13 +27,24 @@ REPO=${REPO:-"spark-rapids-jni"}
 PARALLEL_LEVEL=${PARALLEL_LEVEL:-4}
 REPO_LOC="github.com/${OWNER}/${REPO}.git"
 
-git config user.name "spark-rapids automation"
-git config user.email "sw-gpu-spark-github-nvauto@nvidia.com"
+GIT_AUTHOR_NAME="spark-rapids automation"
+GIT_COMMITTER_NAME="spark-rapids automation"
+GIT_AUTHOR_EMAIL="70000568+nvauto@users.noreply.github.com"
+GIT_COMMITTER_EMAIL="70000568+nvauto@users.noreply.github.com"
 git submodule update --init --recursive
 
-INTERMEDIATE_HEAD=bot-submodule-sync-${REF}
 cudf_prev_sha=$(git -C thirdparty/cudf rev-parse HEAD)
-git checkout -b ${INTERMEDIATE_HEAD} origin/${REF}
+
+INTERMEDIATE_HEAD=bot-submodule-sync-${REF}
+remote_head=$(git ls-remote --heads origin ${INTERMEDIATE_HEAD})
+if [[ -z $remote_head ]]; then
+  git checkout -b ${INTERMEDIATE_HEAD} origin/${REF}
+else
+  git fetch origin ${INTERMEDIATE_HEAD} ${REF}
+  git checkout -b ${INTERMEDIATE_HEAD} origin/${INTERMEDIATE_HEAD}
+  git merge origin/${REF}
+fi
+
 # sync up cudf from remote
 git submodule update --remote --merge
 cudf_sha=$(git -C thirdparty/cudf rev-parse HEAD)
@@ -68,7 +79,7 @@ fi
 # force push the intermediate branch and create PR against REF
 # if test passed, it will try auto-merge the PR
 # if test failed, it will only comment the test result in the PR
-git push https://${GIT_USER}:${GIT_PWD}@${REPO_LOC} ${INTERMEDIATE_HEAD} -f
+git push origin ${INTERMEDIATE_HEAD} -f
 $WORKSPACE/.github/workflows/action-helper/python/submodule-sync \
   --owner=${OWNER} \
   --repo=${REPO} \
@@ -77,4 +88,5 @@ $WORKSPACE/.github/workflows/action-helper/python/submodule-sync \
   --sha=${sha} \
   --cudf_sha=${cudf_sha} \
   --token=${GIT_PWD} \
-  --passed=${test_pass}
+  --passed=${test_pass} \
+  --delete_head=True

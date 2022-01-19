@@ -1,6 +1,19 @@
+# Copyright (c) 2022, NVIDIA CORPORATION.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import argparse
 import os
-import sys
 
 import requests
 
@@ -17,9 +30,9 @@ class PullRequest:
         self.head_owner = head_owner
         self.head = head
         self.base_owner = base_owner
-        self.base_repo = repo
+        self.repo = repo
         self.base = base
-        self.pulls_url = f'{API_URL}/repos/{self.base_owner}/{self.base_repo}/pulls'
+        self.pulls_url = f'{API_URL}/repos/{self.base_owner}/{self.repo}/pulls'
         self._head_auth_headers = {
             'Accept': 'application/vnd.github.v3+json',
             'Authorization': f"token {head_token}"
@@ -92,14 +105,14 @@ class PullRequest:
 
 Please use the following steps to fix the merge conflicts manually:
 ```
-# Assume upstream is {self.base_owner}/{self.base_repo} remote
+# Assume upstream is {self.base_owner}/{self.repo} remote
 git fetch upstream {self.head} {self.base}
 git checkout -b fix-auto-merge-conflict-{number} upstream/{self.base}
 git merge upstream/{self.head}
 # Fix any merge conflicts caused by this merge
 git commit -am "Merge {self.head} into {self.base}"
 git push <personal fork> fix-auto-merge-conflict-{number}
-# Open a PR targets {self.base_owner}/{self.base_repo} {self.base}
+# Open a PR targets {self.base_owner}/{self.repo} {self.base}
 ```
 **IMPORTANT:** Before merging this PR, be sure to change the merging strategy to `Create a merge commit` (repo admin only).
 
@@ -110,7 +123,7 @@ Once this PR is merged, the auto-merge PR should automatically be closed since i
 
     def comment(self, number, content):
         """comment in a pull request"""
-        url = f'{API_URL}/repos/{self.base_owner}/{self.base_repo}/issues/{number}/comments'
+        url = f'{API_URL}/repos/{self.base_owner}/{self.repo}/issues/{number}/comments'
         params = {
             'body': content
         }
@@ -121,6 +134,21 @@ Once this PR is merged, the auto-merge PR should automatically be closed since i
             print('FAILURE - create comment')
             print(f'status code: {r.status_code}')
             print(r.json())
+
+    def delete_branch(self, owner, branch):
+        """delete a branch"""
+        url = f'{API_URL}/repos/{owner}/{self.repo}/git/refs/heads/{branch}'
+        r = requests.delete(url, headers=self._base_auth_headers)
+        if r.status_code == 204:
+            print(f'SUCCESS - delete {branch}')
+        else:
+            print(f'FAILURE - delete {branch}')
+            print(f'status code: {r.status_code}')
+            print(r.json())
+
+    def delete_head(self):
+        """delete the HEAD branch in a pull request"""
+        return self.delete_branch(self.head_owner, self.head)
 
 
 class EnvDefault(argparse.Action):
