@@ -33,9 +33,23 @@ GIT_AUTHOR_EMAIL="70000568+nvauto@users.noreply.github.com"
 GIT_COMMITTER_EMAIL="70000568+nvauto@users.noreply.github.com"
 git submodule update --init --recursive
 
-INTERMEDIATE_HEAD=bot-submodule-sync-${REF}
 cudf_prev_sha=$(git -C thirdparty/cudf rev-parse HEAD)
-git checkout -b ${INTERMEDIATE_HEAD} origin/${REF}
+
+INTERMEDIATE_HEAD=bot-submodule-sync-${REF}
+# cleanup remote first if no open PR against BASE
+$WORKSPACE/.github/workflows/action-helper/python/cleanup-bot-branch \
+  --owner=${OWNER} --repo=${REPO} --head=${INTERMEDIATE_HEAD} --base=${REF}
+
+
+remote_head=$(git ls-remote --heads origin ${INTERMEDIATE_HEAD})
+if [[ -z $remote_head ]]; then
+  git checkout -b ${INTERMEDIATE_HEAD} origin/${REF}
+else
+  git fetch origin ${INTERMEDIATE_HEAD} ${REF}
+  git checkout -b ${INTERMEDIATE_HEAD} origin/${INTERMEDIATE_HEAD}
+  git merge origin/${REF}
+fi
+
 # sync up cudf from remote
 git submodule update --remote --merge
 cudf_sha=$(git -C thirdparty/cudf rev-parse HEAD)
@@ -79,4 +93,5 @@ $WORKSPACE/.github/workflows/action-helper/python/submodule-sync \
   --sha=${sha} \
   --cudf_sha=${cudf_sha} \
   --token=${GIT_PWD} \
-  --passed=${test_pass}
+  --passed=${test_pass} \
+  --delete_head=True
