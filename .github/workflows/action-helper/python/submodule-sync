@@ -70,12 +70,13 @@ def main():
                                    f"Test passed: **{args.passed}**")
 
         print(f'if {args.passed} and {args.sha} == {sha}:')
-        if args.passed and args.sha == sha:
-            pr.auto_merge(number, sha, merge_method='squash')
-            if args.delete_head:
-                pr.delete_head()
-        else:
-            raise Exception(f'if {args.passed} and {args.sha} == {sha}')
+        if args.passed:
+            if args.sha == sha:
+                pr.auto_merge(number, sha, merge_method='squash')
+                if args.delete_head:
+                    pr.delete_head()
+            else:
+                raise Exception(f'Failed to auto-merge, inconsistent HEAD sha local:{args.sha}, remote: {sha}')
     except Exception as e:
         print(e)
         sys.exit(1)
