@@ -18,13 +18,13 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <servers>
         <server>
-            <username>${env.URM_CREDS_USR}</username>
-            <password>${env.URM_CREDS_PSW}</password>
+            <username>${env.ART_CREDS_USR}</username>
+            <password>${env.ART_CREDS_PSW}</password>
             <id>central</id>
         </server>
         <server>
-            <username>${env.URM_CREDS_USR}</username>
-            <password>${env.URM_CREDS_PSW}</password>
+            <username>${env.ART_CREDS_USR}</username>
+            <password>${env.ART_CREDS_PSW}</password>
             <id>snapshots</id>
         </server>
         <server>
@@ -42,13 +42,13 @@
                     </snapshots>
                     <id>central</id>
                     <name>sw-spark-maven</name>
-                    <url>${env.URM_URL}</url>
+                    <url>${env.ART_URL}</url>
                 </repository>
                 <repository>
                     <snapshots />
                     <id>snapshots</id>
                     <name>sw-spark-maven</name>
-                    <url>${env.URM_URL}</url>
+                    <url>${env.ART_URL}</url>
                 </repository>
             </repositories>
             <pluginRepositories>
@@ -58,59 +58,27 @@
                     </snapshots>
                     <id>central</id>
                     <name>sw-spark-maven</name>
-                    <url>${env.URM_URL}</url>
+                    <url>${env.ART_URL}</url>
                 </pluginRepository>
                 <pluginRepository>
                     <snapshots />
                     <id>snapshots</id>
                     <name>sw-spark-maven</name>
-                    <url>${env.URM_URL}</url>
+                    <url>${env.ART_URL}</url>
                 </pluginRepository>
             </pluginRepositories>
             <id>artifactory</id>
         </profile>
         <profile>
-            <id>mirror-apache-to-urm</id>
-            <repositories>
-                <repository>
-                    <id>apache.snapshots</id>
-                    <name>sw-spark-maven</name>
-                    <url>${env.URM_URL}</url>
-                </repository>
-            </repositories>
-        </profile>
-        <profile>
-            <id>mirror-apache-https-to-urm</id>
-            <repositories>
-                <repository>
-                    <id>apache.snapshots.https</id>
-                    <name>sw-spark-maven</name>
-                    <url>${env.URM_URL}</url>
-                </repository>
-            </repositories>
-        </profile>
-        <profile>
-            <id>mirror-apache2-to-urm</id>
-            <repositories>
-                <repository>
-                    <id>apache-snapshots-repo</id>
-                    <name>sw-spark-maven</name>
-                    <url>${env.URM_URL}</url>
-                </repository>
-            </repositories>
-        </profile>
-        <profile>
-            <id>deploy-to-urm</id>
+            <id>deploy-to-art</id>
             <properties>
-                <altDeploymentRepository>snapshots::default::${env.URM_URL}-local</altDeploymentRepository>
+                <altDeploymentRepository>snapshots::default::${env.ART_URL}-local</altDeploymentRepository>
             </properties>
         </profile>
     </profiles>
     <activeProfiles>
         <activeProfile>artifactory</activeProfile>
-        <activeProfile>mirror-apache-to-urm</activeProfile>
-        <activeProfile>mirror-apache-https-to-urm</activeProfile>
-        <activeProfile>mirror-apache2-to-urm</activeProfile>
-        <activeProfile>deploy-to-urm</activeProfile>
+        <activeProfile>deploy-to-art</activeProfile>
     </activeProfiles>
 </settings>
+

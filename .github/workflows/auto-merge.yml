@@ -38,7 +38,7 @@ jobs:
       - name: push intermediate branch for auto-merge
         run: |
           git config user.name "spark-rapids automation"
-          git config user.email "sw-gpu-spark-github-nvauto@nvidia.com"
+          git config user.email "70000568+nvauto@users.noreply.github.com "
           git fetch origin ${HEAD} ${BASE}
           git checkout -b ${INTERMEDIATE_HEAD} origin/${HEAD}
           OUT=$(git --no-pager diff --name-only origin/${BASE} | grep "${FILE_USE_BASE}" || true)
