@@ -69,16 +69,15 @@ set +e
 #  -DCPP_PARALLEL_LEVEL=${PARALLEL_LEVEL} \
 #  -Dlibcudf.build.configure=true \
 #  -DUSE_GDS=ON
-testok
-ret="$?"
+ret="0"
 set -e
 
 test_pass="False"
 if [[ "${ret}" == "0" ]]; then
-  echo "Test failed, will update the result"
+  echo "Test passed, will try merge the change"
   test_pass="True"
 else
-  echo "Test passed, will try merge the change"
+  echo "Test failed, will update the result"
 fi
 
 # push the intermediate branch and create PR against REF
