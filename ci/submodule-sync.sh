@@ -38,7 +38,7 @@ cudf_prev_sha=$(git -C thirdparty/cudf rev-parse HEAD)
 INTERMEDIATE_HEAD=bot-submodule-sync-${REF}
 # try cleanup remote first if no open PR against BASE
 $WORKSPACE/.github/workflows/action-helper/python/cleanup-bot-branch \
-  --owner=${OWNER} --repo=${REPO} --head=${INTERMEDIATE_HEAD} --base=${REF} --token=${GIT_PASSWORD} || true
+  --owner=${OWNER} --repo=${REPO} --head=${INTERMEDIATE_HEAD} --base=${REF} --token=${GIT_TOKEN} || true
 
 remote_head=$(git ls-remote --heads origin ${INTERMEDIATE_HEAD})
 if [[ -z $remote_head ]]; then
@@ -83,7 +83,8 @@ fi
 # push the intermediate branch and create PR against REF
 # if test passed, it will try auto-merge the PR
 # if test failed, it will only comment the test result in the PR
-git push origin ${INTERMEDIATE_HEAD}
+git push https://${GIT_USER}:${GIT_TOKEN}@${REPO_LOC} ${INTERMEDIATE_HEAD}
+sleep 30 # sleep for a while to avoid inconsistent sha from GitHub REST API
 $WORKSPACE/.github/workflows/action-helper/python/submodule-sync \
   --owner=${OWNER} \
   --repo=${REPO} \
@@ -91,6 +92,6 @@ $WORKSPACE/.github/workflows/action-helper/python/submodule-sync \
   --base=${REF} \
   --sha=${sha} \
   --cudf_sha=${cudf_sha} \
-  --token=${GIT_PASSWORD} \
+  --token=${GIT_TOKEN} \
   --passed=${test_pass} \
   --delete_head=True
