@@ -56,6 +56,6 @@ jobs:
         env:
           OWNER: pxLi
           REPO: spark-rapids-jni
-          HEAD: ${{ env.INTERMEDIATE_HEAD }}
+          HEAD: bot-auto-merge-${{ env.HEAD }}
           BASE: ${{ env.BASE }}
           TOKEN: ${{ secrets.AUTOMERGE_TOKEN }}
