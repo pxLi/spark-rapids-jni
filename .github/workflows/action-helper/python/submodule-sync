@@ -16,9 +16,8 @@
 
 import sys
 from argparse import ArgumentParser
-from distutils.util import strtobool
 
-from utils import EnvDefault, PullRequest
+from utils import EnvDefault, PullRequest, strtobool
 
 
 def main():

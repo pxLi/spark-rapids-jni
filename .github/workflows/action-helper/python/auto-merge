@@ -16,9 +16,8 @@
 
 import sys
 from argparse import ArgumentParser
-from distutils.util import strtobool
 
-from utils import EnvDefault, PullRequest
+from utils import EnvDefault, PullRequest, strtobool
 
 
 def main():
@@ -33,7 +32,7 @@ def main():
                         help="Base ref, will try use env BASE if empty")
     parser.add_argument("--token", action=EnvDefault, env="TOKEN",
                         help="github token, will try use env TOKEN if empty")
-    parser.add_argument("--delete_head", default=False,  type=lambda x: bool(strtobool(x)),
+    parser.add_argument("--delete_head", default=False, type=lambda x: bool(strtobool(x)),
                         help="if delete HEAD branch after auto-merge")
     args = parser.parse_args()
 
