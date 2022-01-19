@@ -70,7 +70,7 @@ def main():
                                    f"Test passed: **{args.passed}**")
 
         if args.passed and args.sha == sha:
-            pr.auto_merge(number, sha)
+            pr.auto_merge(number, sha, merge_method='squash')
             if args.delete_head:
                 pr.delete_head()
     except Exception as e:

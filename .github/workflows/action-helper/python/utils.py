@@ -84,11 +84,11 @@ class PullRequest:
         url = f'{self.pulls_url}/{number}/merge'
         return requests.put(url, headers=self._head_auth_headers, json=params)
 
-    def auto_merge(self, number, sha):
+    def auto_merge(self, number, sha, merge_method='merge'):
         """merge a auto-merge pull request"""
         params = {
             'sha': sha,
-            'merge_method': 'merge'
+            'merge_method': merge_method,
         }
         r = self.merge(number, params)
         if r.status_code == 200:
