@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v3.1.0
         with:
           ref: ${{ env.HEAD }} # force to fetch from latest upstream instead of PR ref
-          token: ${{ secrets.AUTOMERGE_TOKEN }}
+          # token: ${{ secrets.AUTOMERGE_TOKEN }}
 
       - name: push intermediate branch for auto-merge
         run: |
@@ -49,8 +49,6 @@ jobs:
           [[ ! -z "${OUT}" ]] && git checkout origin/${BASE} -- ${FILE_USE_BASE} && \
             git commit -s -am "Auto-merge use submodule in BASE ref"
           git push origin ${INTERMEDIATE_HEAD} -f
-          echo "123321"
-          #git push https://nvauto:${{ secrets.AUTOMERGE_TOKEN }}@github.com/pxLi/spark-rapids-jni.git ${INTERMEDIATE_HEAD} -f
         env:
           INTERMEDIATE_HEAD: bot-auto-merge-${{ env.HEAD }}
           FILE_USE_BASE: thirdparty/cudf
