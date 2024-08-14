@@ -27,4 +27,4 @@ jobs:
       repo: spark-rapids-jni
       pull_number: ${{ github.event.number }}
     secrets:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
+      token: ${{ secrets.GITHUB_TOKEN }}
