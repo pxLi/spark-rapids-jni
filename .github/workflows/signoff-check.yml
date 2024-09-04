@@ -23,7 +23,7 @@ jobs:
   signoff-check:
     runs-on: ubuntu-latest
     steps:
-      - id: test
+      - name: test
         uses: pxLi/test-workflow-permission/.github/workflows/signoff-check@main
         with:
           owner: pxLi
