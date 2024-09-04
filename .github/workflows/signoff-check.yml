@@ -21,10 +21,9 @@ on:
 
 jobs:
   signoff-check:
-    uses: pxLi/test-workflow-permission/.github/workflows/signoff-check.yml@main
+    uses: pxLi/test-workflow-permission/.github/workflows/signoff-check@main
     with:
       owner: pxLi
       repo: spark-rapids-jni
       pull_number: ${{ github.event.number }}
-    secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
