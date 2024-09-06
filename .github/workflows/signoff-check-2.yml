@@ -1,0 +1,15 @@
+name: signoff check 2
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  signoff-check-workflow:
+    uses: pxLi/test-workflow-permission/.github/workflows/signoff-check.yml@main
+    with:
+      owner: pxLi
+      repo: spark-rapids-jni
+      pull_number: ${{ github.event.number }}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
